@@ -8,9 +8,11 @@ class Vue {
 		}
 
     this.$options = options
-    this._proxyData(options.data)
+    this._data = options.data
+    
+    this._proxyData(this._data)
 
-    observer(options.data)
+    observer(this._data)
   }
 
   _proxyData(data) {
@@ -18,10 +20,32 @@ class Vue {
   		return false
   	}
 
+    const vm = this
+
   	for (var key of Object.keys(data)) {
-  		this[key] = data[key]
+  		// new Proxy(vm, {
+    //     get(target, key, receiver) {
+    //       console.log(`getting ${key}!`)
+    //       return vm._data[key]
+    //     },
+    //     set(target, key, value, receiver) {
+    //       console.log(`setting ${key}!`)
+    //       return vm._data[key] = value
+    //     }
+    //   })
+      
+      Object.defineProperty(vm, key, {
+          configurable: false,
+          enumerable: true,
+          get: function proxyGetter() {
+              return vm._data[key]
+          },
+          set: function proxySetter(newVal) {
+              vm._data[key] = newVal
+          }
+      })
 		}
   }
 }
-
+ 
 export default Vue
