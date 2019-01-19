@@ -1,4 +1,5 @@
 import observer from './observer.js'
+import { Compile } from './compile.js'
 
 class Vue {
 	constructor(options) {
@@ -13,6 +14,8 @@ class Vue {
     this._proxyData(this._data)
 
     observer(this._data)
+
+    this.$compile = new Compile(options.el, this)
   }
 
   _proxyData(data) {
